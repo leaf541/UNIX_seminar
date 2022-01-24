@@ -23,6 +23,8 @@
 int lsh_cd(char **args);
 int lsh_help(char **args);
 int lsh_exit(char **args);
+int lsh_cat(char **args);
+int lsh_pwd(char **args);
 
 /*
   List of builtin commands, followed by their corresponding functions.
@@ -30,13 +32,17 @@ int lsh_exit(char **args);
 char *builtin_str[] = {
   "cd",
   "help",
-  "exit"
+  "exit",
+  "cat",
+  "pwd",
 };
 
 int (*builtin_func[]) (char **) = {
   &lsh_cd,
   &lsh_help,
-  &lsh_exit
+  &lsh_exit,
+  &lsh_cat,
+  &lsh_pwd,
 };
 
 int lsh_num_builtins() {
@@ -62,6 +68,13 @@ int lsh_cd(char **args)
     }
   }
   return 1;
+}
+
+int lsh_pwd(char **args){
+    char cwd[1024];
+    chdir("/path/to/change/directory/to");
+    getcwd(cwd, sizeof(cwd));
+    printf("Current working dir: %s\n", cwd);
 }
 
 /**
@@ -92,6 +105,16 @@ int lsh_help(char **args)
 int lsh_exit(char **args)
 {
   return 0;
+}
+
+int lsh_cat(char **args){
+  FILE* fp;      
+  char c;
+  fp = fopen(args[1], "r");
+  while((c = getc(fp)) != EOF)
+    printf("%c", c);
+  fclose(fp);
+  return 1;
 }
 
 /**
