@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 
 /*
   Function Declarations for builtin shell commands:
@@ -25,6 +26,7 @@ int lsh_help(char **args);
 int lsh_exit(char **args);
 int lsh_cat(char **args);
 int lsh_pwd(char **args);
+int lsh_ls(char **args);
 
 /*
   List of builtin commands, followed by their corresponding functions.
@@ -35,6 +37,7 @@ char *builtin_str[] = {
     "exit",
     "cat",
     "pwd",
+    "ls",
 };
 
 int (*builtin_func[])(char **) = {
@@ -43,6 +46,7 @@ int (*builtin_func[])(char **) = {
     &lsh_exit,
     &lsh_cat,
     &lsh_pwd,
+    &lsh_ls,
 };
 
 int lsh_num_builtins()
@@ -72,6 +76,32 @@ int lsh_cd(char **args)
       perror("lsh");
     }
   }
+  return 1;
+}
+
+int lsh_ls(char **args)
+{
+  DIR *dp;
+  struct dirent *dirp;
+
+  // if (argc != 2) {
+  //   fprintf(stderr, "usage: ls directory_name\n");
+  //   return 1;
+  // }
+
+  if ((dp = opendir(args[1])) == NULL)
+  {
+    dp = opendir("./");
+    while ((dirp = readdir(dp)) != NULL)
+      printf("%s\t", dirp->d_name);
+    printf("\n");
+    return 1;
+  }
+
+  while ((dirp = readdir(dp)) != NULL)
+    printf("%s\t", dirp->d_name);
+  printf("\n");
+  closedir(dp);
   return 1;
 }
 
